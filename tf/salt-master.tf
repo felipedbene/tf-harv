@@ -1,22 +1,21 @@
 resource "harvester_virtualmachine" "minions" {
-  name                 = "minion-${count.index}"
-  count = 1
+  name                 = "salt-master"
   namespace            = "default"
   restart_after_update = true
 
-  description = "ubuntu24 raw image"
+  description = "Salt Master Node"
   tags = {
     ssh-user = "ubuntu"
   }
 
-  cpu    = 4
-  memory = "8Gi"
+  cpu    = 8
+  memory = "16Gi"
 
   efi         = true
   secure_boot = false
 
   run_strategy    = "RerunOnFailure"
-  hostname        = "minion-${count.index}"
+  hostname        = "salt-master"
   reserved_memory = "100Mi"
   machine_type    = "q35"
 
