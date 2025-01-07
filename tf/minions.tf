@@ -1,10 +1,10 @@
 resource "harvester_virtualmachine" "minion" {
   name                 = "minion-${count.index}"
-  count = 0
+  count = 2
   namespace            = "default"
   restart_after_update = true
 
-  description = "ubuntu24 raw image"
+  description = "ubuntu24 minion image"
   tags = {
     ssh-user = "ubuntu"
   }
