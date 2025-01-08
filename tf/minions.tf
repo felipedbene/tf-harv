@@ -1,6 +1,6 @@
 resource "harvester_virtualmachine" "minion" {
   name                 = "minion-${count.index}"
-  count = 2
+  count = 1
   namespace            = "default"
   restart_after_update = true
 
@@ -9,8 +9,8 @@ resource "harvester_virtualmachine" "minion" {
     ssh-user = "ubuntu"
   }
 
-  cpu    = 4
-  memory = "8Gi"
+  cpu    = 6
+  memory = "12Gi"
 
   efi         = true
   secure_boot = false
@@ -39,7 +39,13 @@ resource "harvester_virtualmachine" "minion" {
   }
 
   cloudinit {
-    user_data_secret_name    = "jelly-clone"
-    network_data_secret_name = "jelly-clone"
+    user_data_secret_name    = "minion-salt"
+    #user_data_secret_name    = "jelly-clone"
+
   }
+    lifecycle {
+        ignore_changes = [
+            disk[0].image
+        ]
+    }
 }

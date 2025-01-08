@@ -1,4 +1,4 @@
-resource "harvester_virtualmachine" "minions" {
+resource "harvester_virtualmachine" "salt-master" {
   name                 = "salt-master"
   namespace            = "default"
   restart_after_update = true
@@ -9,7 +9,7 @@ resource "harvester_virtualmachine" "minions" {
   }
 
   cpu    = 8
-  memory = "16Gi"
+  memory = "12Gi"
 
   efi         = true
   secure_boot = false
@@ -41,4 +41,9 @@ resource "harvester_virtualmachine" "minions" {
     user_data_secret_name    = "jelly-clone"
     network_data_secret_name = "jelly-clone"
   }
+  lifecycle {
+        ignore_changes = [
+            disk[0].image
+        ]
+    }
 }
