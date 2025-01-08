@@ -1,6 +1,5 @@
 # Variables
 {% set platform = "arm64" if grains['osarch'] == "aarch64" else "amd64" %}
-{% set myos = grains['os'] %}
 {% set containerd_version = salt['cmd.run']('curl -s https://api.github.com/repos/containerd/containerd/releases/latest | jq -r ".tag_name"').lstrip('v') %}
 {% set runc_version = salt['cmd.run']('curl -s https://api.github.com/repos/opencontainers/runc/releases/latest | jq -r ".tag_name"') %}
 
@@ -12,7 +11,7 @@ install_dependencies:
       - wget
 
 # Load kernel modules for container runtime
-load_container_modules:
+load_container_modules_conf:
   file.managed:
     - name: /etc/modules-load.d/containerd.conf
     - contents: |
@@ -20,13 +19,15 @@ load_container_modules:
         br_netfilter
     - mode: 644
 
-  module.load:
-    - mods:
-      - overlay
-      - br_netfilter
+load_container_modules_now:
+  cmd.run:
+    - name: |
+        modprobe overlay
+        modprobe br_netfilter
+    - unless: lsmod | grep -E 'overlay|br_netfilter'
 
 # Configure sysctl
-configure_sysctl:
+configure_sysctl_file:
   file.managed:
     - name: /etc/sysctl.d/99-kubernetes-cri.conf
     - contents: |
@@ -35,6 +36,7 @@ configure_sysctl:
         net.bridge.bridge-nf-call-ip6tables = 1
     - mode: 644
 
+apply_sysctl:
   cmd.run:
     - name: sysctl --system
 
@@ -42,9 +44,17 @@ configure_sysctl:
 install_containerd:
   cmd.run:
     - name: |
-        wget https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-{{ platform }}.tar.gz &&
-        tar xvf containerd-{{ containerd_version }}-linux-{{ platform }}.tar.gz -C /usr/local
+        CONTAINERD_VERSION=$(curl -s https://api.github.com/repos/containerd/containerd/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+        wget https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/containerd-${CONTAINERD_VERSION}-linux-{{ platform }}.tar.gz &&
+        tar xvf containerd-${CONTAINERD_VERSION}-linux-{{ platform }}.tar.gz -C /usr/local
     - unless: test -x /usr/local/bin/containerd
+
+
+# Create containerd configuration directory
+create_containerd_config_dir:
+  file.directory:
+    - name: /etc/containerd
+    - mode: 755
 
 # Configure containerd
 configure_containerd:
@@ -63,22 +73,25 @@ configure_containerd:
                     SystemdCgroup = true
     - mode: 644
 
-# Install runc
+# Download and install runc
 install_runc:
   cmd.run:
     - name: |
-        wget https://github.com/opencontainers/runc/releases/download/{{ runc_version }}/runc.{{ platform }} &&
+        RUNC_VERSION=$(curl -s https://api.github.com/repos/opencontainers/runc/releases/latest | jq -r '.tag_name')
+        wget https://github.com/opencontainers/runc/releases/download/${RUNC_VERSION}/runc.{{ platform }} &&
         install -m 755 runc.{{ platform }} /usr/local/sbin/runc
     - unless: test -x /usr/local/sbin/runc
 
+
 # Setup and enable containerd service
-enable_containerd_service:
+download_containerd_service:
   cmd.run:
     - name: |
         wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service &&
         mv containerd.service /usr/lib/systemd/system/
     - unless: test -f /usr/lib/systemd/system/containerd.service
 
+enable_containerd_service:
   service.running:
     - name: containerd
     - enable: True
@@ -89,11 +102,14 @@ disable_apparmor:
     - name: |
         ln -s /etc/apparmor.d/runc /etc/apparmor.d/disable/ &&
         apparmor_parser -R /etc/apparmor.d/runc
-    - unless: test -f /etc/apparmor.d/disable/runc
+    - unless: test -L /etc/apparmor.d/disable/runc
 
-# Touch a file for testing
-create_test_file:
-  file.managed:
-    - name: /tmp/container.txt
-    - contents: ''
-    - mode: 644
+
+# Reboot system after all states
+# reboot_system:
+#   cmd.run:
+#     - name: systemctl reboot
+#     - onlyif:
+#       - systemctl is-active --quiet containerd
+
+
