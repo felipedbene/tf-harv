@@ -22,7 +22,7 @@ resource "harvester_virtualmachine" "minion" {
 
   network_interface {
     name           = "nic-1"
-    network_name = "default/u-v2"
+    network_name = "default/u-v2-low-mtu"
     type = "bridge"
     wait_for_lease = true
   }
