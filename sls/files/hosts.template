@@ -1,0 +1,20 @@
+# Managed by SaltStack
+
+127.0.0.1   localhost
+::1         localhost
+
+# Static entry for salt
+10.0.2.65    salt
+
+{% if minions is mapping %}
+{% for minion_id, minion_name in minions.items() %}
+    {% set ip_address = ip_data.get(minion_id, [None])[0] %}
+    {% if ip_address %}
+{{ ip_address }}  {{ minion_name }}  {{ minion_id }}
+    {% else %}
+# No IP address found for {{ minion_id }}
+    {% endif %}
+{% endfor %}
+{% else %}
+# 'minions' variable is not a dictionary, check the debug logs for more info.
+{% endif %}
