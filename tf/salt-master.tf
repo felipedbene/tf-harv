@@ -33,7 +33,7 @@ resource "harvester_virtualmachine" "salt-master" {
     bus        = "virtio"
     boot_order = 1
 
-    image       = "image-vjscd"
+    image       = "image-ffn9f"
     auto_delete = true
   }
 

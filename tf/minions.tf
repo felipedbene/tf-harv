@@ -34,7 +34,7 @@ resource "harvester_virtualmachine" "minion" {
     bus        = "virtio"
     boot_order = 1
 
-    image       = "image-vjscd"
+    image       = "image-ffn9f"
     auto_delete = true
   }
 
