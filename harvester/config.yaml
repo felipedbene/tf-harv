@@ -1,16 +1,10 @@
 scheme_version: 1
-server_url: https://10.0.5.100:443
+server_url: https://10.0.5.131:443
 token: 'Bucetao!86'
 os:
   ssh_authorized_keys:
     - github:felipedbene
-  write_files:
-  - encoding: ""
-    content: test content
-    owner: root
-    path: /etc/test.txt
-    permissions: '0755'
-  hostname: harv1
+  hostname: harv4
   modules:
     - kvm
     - nvme
@@ -30,8 +24,8 @@ install:
   mode: create
   management_interface:
     interfaces:
-    - name: enp5s0
-      hwAddr: "10:ff:e0:34:b0:49"
+    - name: enp8s0
+      hwAddr: "00:13:32:08:fd:04"
     method: dhcp
   force_efi: true
   device: /dev/nvme0n1
