@@ -1,6 +1,6 @@
 resource "harvester_virtualmachine" "minion" {
   name                 = "minion-${count.index}"
-  count = 0
+  count = 9
   namespace            = "default"
   restart_after_update = true
 
@@ -22,7 +22,7 @@ resource "harvester_virtualmachine" "minion" {
 
   network_interface {
     name           = "nic-1"
-    network_name = "default/u-v2-low-mtu"
+    network_name = "default/vlan2"
     type = "bridge"
     wait_for_lease = true
   }
@@ -34,13 +34,12 @@ resource "harvester_virtualmachine" "minion" {
     bus        = "virtio"
     boot_order = 1
 
-    image       = "image-9hhhz"
+    image       = "image-vjscd"
     auto_delete = true
   }
 
   cloudinit {
     user_data_secret_name    = "minion-salt"
-    #user_data_secret_name    = "jelly-clone"
 
   }
     lifecycle {
