@@ -31,26 +31,25 @@ resource "harvester_virtualmachine" "omv-nfs" {
     type       = "disk"
     size       = "1024Gi"
     bus        = "virtio"
-    boot_order = 2
-
-    auto_delete = true
-  }
-  disk {
-    name       = "cd-rom"
-    type       = "cd-rom"
-    size       = "2Gi"
-    bus        = "sata"
-    image = "default/image-h7swt"
     boot_order = 1
 
+    auto_delete = false
   }
+#   disk {
+#     name       = "cd-rom"
+#     type       = "cd-rom"
+#     size       = "2Gi"
+#     bus        = "sata"
+#     image = "default/image-h7swt"
+#     boot_order = 1
+
+#   }
 
   cloudinit {
     user_data_secret_name    = "base-clone"
   }
+
   lifecycle {
-        ignore_changes = [
-            disk[0].image
-        ]
+        ignore_changes = all
     }
 }
