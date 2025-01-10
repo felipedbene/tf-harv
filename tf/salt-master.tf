@@ -8,8 +8,8 @@ resource "harvester_virtualmachine" "salt-master" {
     ssh-user = "ubuntu"
   }
 
-  cpu    = 8
-  memory = "12Gi"
+  cpu    = 4
+  memory = "8Gi"
 
   efi         = true
   secure_boot = false
@@ -21,7 +21,7 @@ resource "harvester_virtualmachine" "salt-master" {
 
   network_interface {
     name           = "nic-1"
-    network_name = "default/u-v2"
+    network_name = "default/vlan2"
     type = "bridge"
     wait_for_lease = true
   }
@@ -33,13 +33,12 @@ resource "harvester_virtualmachine" "salt-master" {
     bus        = "virtio"
     boot_order = 1
 
-    image       = "image-9hhhz"
+    image       = "image-vjscd"
     auto_delete = true
   }
 
   cloudinit {
-    user_data_secret_name    = "jelly-clone"
-    network_data_secret_name = "jelly-clone"
+    user_data_secret_name    = "base-clone"
   }
   lifecycle {
         ignore_changes = [

@@ -1,6 +1,6 @@
 resource "harvester_virtualmachine" "minion" {
   name                 = "minion-${count.index}"
-  count = 10
+  count = 0
   namespace            = "default"
   restart_after_update = true
 
