@@ -160,16 +160,11 @@ Deploy the nodes with:
 ```bash
 terraform plan && terraform apply
 ```
-
+Refer to `tf/` folder for the full resuling file.
 ---
 
 ## 5. Common Issues and Troubleshooting
 
-### VM Fails to Start
+Mail me for questions felipe [ at ] debene [ . ] xyz.
 
-- **Cause**: Single-node clusters or misconfigured Longhorn storage settings can cause issues. Single-node setups often have higher demands for reliability in storage, and Longhorn requires extra care in configuration to ensure proper functionality.
-
-- **Fix**: Refer to the [Harvester Longhorn Configuration Guide](https://docs.harvesterhci.io/v1.4/vm/index/#using-longhorn-as-the-storage-class) for recommendations on configuring Longhorn storage properly, especially in single-node clusters.
-
-## 6. Part 2 - Let's add some (salt)[salt.md] to it.aka Node management.
 ---

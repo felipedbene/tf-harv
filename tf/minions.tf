@@ -6,7 +6,7 @@ resource "harvester_virtualmachine" "minion" {
 
   description = "ubuntu24 minion image"
   tags = {
-    ssh-user = "ubuntu"
+    app = "nginx"
   }
 
   cpu    = 6
