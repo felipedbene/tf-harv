@@ -1,0 +1,40 @@
+config:
+  target: "https://k8s.debene.dev"
+  phases:
+    - duration: 60          # Test duration in seconds
+      arrivalRate: 100       # Requests per second
+      rampTo: 2000           # Gradually increase load to 200 requests per second
+  defaults:
+    headers:
+      Content-Type: "application/json"
+scenarios:
+  - flow:
+      - get:
+          url: "/get"
+      - post:
+          url: "/post"
+          json:
+            name: "Felipe"
+            role: "developer"
+      - get:
+          url: "/status/200"
+      - get:
+          url: "/status/404"
+      - get:
+          url: "/delay/1"   # 1-second delay response
+      - get:
+          url: "/redirect/1"
+      - get:
+          url: "/headers"
+          headers:
+            X-Custom-Header: "CustomValue"
+      - post:
+          url: "/post"
+          body: |
+            {"payload": "This is a load test with Artillery"}
+      - get:
+          url: "/ip"
+      - get:
+          url: "/user-agent"
+      - get:
+          url: "/cookies/set/session/12345"

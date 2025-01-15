@@ -1,0 +1,36 @@
+config:
+  target: "https://k8s.debene.dev"
+  phases:
+    - duration: 60          # Test duration in seconds
+      arrivalRate: 500       # Requests per second
+      rampTo: 20000           # Gradually increase load to 200 requests per second
+  defaults:
+    headers:
+      Content-Type: "application/json"
+scenarios:
+  - flow:
+      - get:
+          url: "/get"       # Simple GET request
+      - post:
+          url: "/post"      # POST request with JSON payload
+          json:
+            name: "Felipe"
+            role: "developer"
+      - get:
+          url: "/status/200" # Explicit success response
+      - get:
+          url: "/status/404" # Test not found (404)
+      - get:
+          url: "/delay/1"   # Delay response test
+      - get:
+          url: "/anything"  # General endpoint for catch-all testing
+      - get:
+          url: "/headers"   # Test custom headers
+          headers:
+            X-Custom-Header: "CustomValue"
+      - get:
+          url: "/ip"        # Test client IP endpoint
+      - post:
+          url: "/post"
+          body: |
+            {"payload": "This is a load test without redirects"}
